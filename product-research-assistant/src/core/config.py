@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     
     # LLM Settings
     GOOGLE_API_KEY: Optional[str] = None
-    LLM_PROVIDER: str = "openai"  # "openai" or "google"
+    LLM_PROVIDER: str = "google"  # "openai" or "google"
 
     class Config:
         env_file = ".env"

@@ -17,7 +17,7 @@ def get_llm():
         if not settings.GOOGLE_API_KEY:
             raise ValueError("GOOGLE_API_KEY is missing but LLM_PROVIDER is set to 'google'.")
         return ChatGoogleGenerativeAI(
-            model="gemini-pro", 
+            model="gemini-2.0-flash", 
             google_api_key=settings.GOOGLE_API_KEY, 
             temperature=0,
             convert_system_message_to_human=True # Gemini Pro often handles system messages better as human input

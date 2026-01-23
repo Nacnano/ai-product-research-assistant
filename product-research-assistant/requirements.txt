@@ -14,11 +14,11 @@ httpx
 tiktoken
 
 # AI/LLM - Pinned for compatibility
-langchain<0.3.0
-langchain-community<0.3.0
-langchain-core<0.3.0
-langchain-openai<0.2.0
-langchain-text-splitters<0.3.0
+langchain
+langchain-community
+langchain-core
+langchain-openai
+langchain-text-splitters
 langchain-chroma
-langchain-google-genai<2.0.0
+langchain-google-genai
 fastembed
