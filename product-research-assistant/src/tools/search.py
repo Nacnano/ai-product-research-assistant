@@ -12,8 +12,8 @@ def web_search(query: str) -> str:
     if settings.TAVILY_API_KEY:
         try:
             from langchain_community.tools.tavily_search import TavilySearchResults
-            tool = TavilySearchResults(api_wrapper={"tavily_api_key": settings.TAVILY_API_KEY})
-            return tool.invoke(query)
+            tavily_tool = TavilySearchResults(api_wrapper={"tavily_api_key": settings.TAVILY_API_KEY})
+            return tavily_tool.invoke(query)
         except Exception as e:
             return f"Error using Tavily search: {str(e)}"
             

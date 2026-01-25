@@ -29,9 +29,10 @@ def get_llm() -> BaseChatModel:
             raise ValueError("GOOGLE_API_KEY is missing.")
             
         return ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash", 
+            model="gemini-2.0-flash-exp", 
             google_api_key=settings.GOOGLE_API_KEY, 
             temperature=0,
+            max_retries=10,
             convert_system_message_to_human=True 
         )
     elif provider == "openai":
@@ -44,12 +45,13 @@ def get_llm() -> BaseChatModel:
         logger.error(f"Unsupported LLM_PROVIDER: {provider}")
         raise ValueError(f"Unsupported LLM_PROVIDER: {provider}")
 
-def get_agent_executor() -> AgentExecutor:
+def get_agent_executor() -> Any:
     """
     Initializes and returns an AgentExecutor with the configured tools and LLM.
+    Using a custom executor to ensure compatibility with Gemini and LangChain versions.
     
     Returns:
-        AgentExecutor: The executable agent.
+        Any: The executable agent (SimpleAgentExecutor).
     """
     # Initialize Tools
     tools = [product_catalog_rag, web_search, price_analysis]
@@ -85,13 +87,60 @@ def get_agent_executor() -> AgentExecutor:
     # Create Agent
     agent = create_tool_calling_agent(llm, tools, prompt)
 
+    class SimpleAgentExecutor:
+        def __init__(self, agent, tools):
+            self.agent = agent
+            self.tools = {t.name: t for t in tools}
+            self.verbose = True
+
+        def invoke(self, inputs: dict):
+            steps = []
+            max_steps = 8
+            
+            for i in range(max_steps):
+                try:
+                    output = self.agent.invoke({
+                        "input": inputs["input"], 
+                        "intermediate_steps": steps
+                    })
+                except Exception as e:
+                    logger.error(f"Error during agent invocation: {e}")
+                    return {"output": f"I apologize, but I encountered an error providing a response: {str(e)}"}
+                
+                # Handle AgentFinish (final answer)
+                if not isinstance(output, list) and "AgentFinish" in str(type(output)):
+                     return {"output": output.return_values["output"]}
+
+                # Handle Actions (list or single)
+                actions = output if isinstance(output, list) else [output]
+                
+                for action in actions:
+                    if "AgentFinish" in str(type(action)):
+                         return {"output": action.return_values["output"]}
+
+                    tool_name = action.tool
+                    tool_input = action.tool_input
+                    
+                    if self.verbose:
+                        logger.info(f"Calling Tool: {tool_name} with {tool_input}")
+                    
+                    tool_obj = self.tools.get(tool_name)
+                    if tool_obj:
+                        try:
+                            observation = tool_obj.invoke(tool_input)
+                        except Exception as e:
+                            observation = f"Error executing tool {tool_name}: {e}"
+                    else:
+                        observation = f"Error: Tool {tool_name} not found."
+                    
+                    if self.verbose:
+                         logger.info(f"Tool Output: {str(observation)[:200]}...")
+
+                    steps.append((action, observation))
+            
+            return {"output": "Agent stopped due to max iterations."}
+
     # Create Executor
-    # Using standard AgentExecutor for robust error handling and loop management
-    agent_executor = AgentExecutor(
-        agent=agent, 
-        tools=tools, 
-        verbose=True,
-        handle_parsing_errors=True
-    )
+    agent_executor = SimpleAgentExecutor(agent, tools)
     
     return agent_executor

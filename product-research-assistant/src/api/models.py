@@ -5,6 +5,7 @@ class QueryRequest(BaseModel):
     query: str
 
 class QueryResponse(BaseModel):
+    id: str
     query: str
     result: str
     intermediate_steps: Optional[List[Any]] = None

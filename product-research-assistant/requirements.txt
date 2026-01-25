@@ -22,3 +22,4 @@ langchain-text-splitters
 langchain-chroma
 langchain-google-genai
 fastembed
+sqlalchemy
