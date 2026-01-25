@@ -1,5 +1,7 @@
+"""
+This module contains analytical tools for the AI agent.
+"""
 from langchain.tools import tool
-from langchain.agents import tool as agent_tool
 from pydantic import BaseModel, Field
 import json
 

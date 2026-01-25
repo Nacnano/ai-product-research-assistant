@@ -9,7 +9,6 @@ def web_search(query: str) -> str:
     Useful for searching the internet for current market trends, competitor prices, 
     reviews, and general information not available in the internal catalog.
     """
-    # 1. Check for Real API Keys
     if settings.TAVILY_API_KEY:
         try:
             from langchain_community.tools.tavily_search import TavilySearchResults
@@ -31,8 +30,6 @@ def web_search(query: str) -> str:
         except Exception as e:
             return f"Error using Serper search: {str(e)}"
 
-    # 2. Mock Implementation (Default)
-    # Return plausible mock data based on query keywords
     query_lower = query.lower()
     
     if "price" in query_lower or "cost" in query_lower:
