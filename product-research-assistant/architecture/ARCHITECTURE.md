@@ -4,6 +4,12 @@
 
 The AI Product Research Assistant is a modular, agentic AI system designed to assist with product research, market analysis, and pricing. It typically intakes user questions, routes them to specific tools (RAG, Web Search, Price Analysis), and aggregates the results.
 
+## Architecture Diagrams
+
+📊 **[Data Pipeline Diagram](./data_pipeline_diagram.md)** - Shows the data ingestion flow from CSV to vector database
+
+📊 **[System Architecture Diagram](./system_architecture_diagram.md)** - Complete system overview with all components and data flow
+
 ## Components
 
 ### 1. Data Ingestion Pipeline
