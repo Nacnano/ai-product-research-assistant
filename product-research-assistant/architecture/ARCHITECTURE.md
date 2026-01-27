@@ -58,5 +58,5 @@ The AI Product Research Assistant is a modular, agentic AI system designed to as
 ## Limitations
 
 - **Mock Search:** Web search is mocked by default to ensure runnability without external keys.
-- **Memory:** The vector DB is loaded into memory (Chroma default). Large datasets might require a server-based vector DB.
-- **History:** Chat history is not currently persisted in a database (in-memory only for the session).
+- **Local Vector Database:** ChromaDB is file-based and suitable for up to 100k products. For larger catalogs or distributed deployments, consider migrating to Qdrant or Pinecone.
+- **No Conversation Memory:** Each query is stateless. The system stores query history in SQLite for analytics, but does not maintain conversation context between queries.
